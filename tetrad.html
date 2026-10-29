@@ -31,6 +31,7 @@
   --ok:#5fc48a; --ok-soft:rgba(95,196,138,.14); --warn:#e0a84a; --warn-soft:rgba(224,168,74,.15);
   --bad:#ef7b68; --bad-soft:rgba(239,123,104,.13); --shade:rgba(0,0,0,.7); color-scheme:dark}
 
+[hidden]{display:none !important}
 *{box-sizing:border-box}
 body{background:var(--paper);color:var(--ink);font:15px/1.5 var(--f-body);margin:0}
 button,input,textarea,select{font:inherit;color:inherit}
@@ -459,6 +460,49 @@ window.__assetUrls = new Map();
   if ('serviceWorker' in navigator && location.protocol.startsWith('http')) {
     navigator.serviceWorker.register('./sw.js').catch(() => {});
   }
+
+  // Seed initial sample data if database is empty
+  setTimeout(async () => {
+    try {
+      if (!localStorage.getItem('tetrad.seeded')) {
+        const tasks = await tx('tasks', 'readonly', store => store.getAll());
+        if (!tasks || tasks.length === 0) {
+          const now = Date.now();
+          const today = new Date().toISOString().slice(0, 10);
+          await tx('tasks', 'readwrite', store => store.put({
+            id: 'sample_task_1',
+            title: 'Попробовать функции тетради',
+            desc: 'Нажми на кружок слева, чтобы изменить статус (надо → делаю → готово). Нажми на текст задания, чтобы развернуть детали.',
+            due: today,
+            tag: 'Инструкция',
+            important: true,
+            status: 'doing',
+            subtasks: [
+              { t: 'Кликнуть по кружку статуса слева', done: true },
+              { t: 'Создать новую заметку или задание сверху', done: false },
+              { t: 'Перетащить файл или вставить скриншот (Ctrl+V)', done: false }
+            ],
+            files: [],
+            created: now,
+            updated: now
+          }));
+          await tx('notes', 'readwrite', store => store.put({
+            id: 'sample_note_1',
+            title: 'Добро пожаловать в Рабочую тетрадь!',
+            body: 'Здесь можно вести конспекты, сохранять ссылки и структурировать задачи по предметам.\n\nВсе данные сохраняются прямо в твоем браузере и доступны оффлайн 24/7.',
+            tag: 'Инструкция',
+            pinned: true,
+            files: [],
+            created: now,
+            updated: now
+          }));
+          localStorage.setItem('tetrad.seeded', '1');
+          notify('tasks');
+          notify('notes');
+        }
+      }
+    } catch(e) { console.error('Seeding error:', e); }
+  }, 100);
 })();
 
 function getBlobSrc(assetId) {
@@ -998,3 +1042,4 @@ render();
 </script>
 </body>
 </html>
+
