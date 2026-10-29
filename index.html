@@ -1,0 +1,1000 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#2456c4">
+<meta name="description" content="Рабочая тетрадь: задания, заметки, файлы">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>📓</text></svg>">
+<title>Рабочая тетрадь</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Golos+Text:wght@400;500;600&family=JetBrains+Mono:wght@400;500&family=Tektur:wght@500;700&display=swap">
+<style>
+/* Layout: a drafting notebook — gridded title block on top, one working column below: composer, tabs, filters, then the chosen view. */
+:root{
+  --paper:#f2f4f6; --card:#ffffff; --ink:#17212c; --muted:#5a6776; --line:#d3dae2;
+  --grid:rgba(36,86,170,.09); --accent:#2456c4; --accent-soft:rgba(36,86,170,.10);
+  --ok:#2c7a4b; --ok-soft:rgba(44,122,75,.12); --warn:#a96d12; --warn-soft:rgba(169,109,18,.13);
+  --bad:#b8392a; --bad-soft:rgba(184,57,42,.10); --shade:rgba(15,25,40,.55);
+  --f-display:"Tektur","Arial Narrow",system-ui,sans-serif;
+  --f-body:"Golos Text",system-ui,-apple-system,"Segoe UI",sans-serif;
+  --f-mono:"JetBrains Mono",ui-monospace,Consolas,monospace;
+}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
+  --paper:#0f151c; --card:#16202a; --ink:#e2e8ef; --muted:#93a1b2; --line:#283545;
+  --grid:rgba(120,160,255,.07); --accent:#7ea3ff; --accent-soft:rgba(126,163,255,.14);
+  --ok:#5fc48a; --ok-soft:rgba(95,196,138,.14); --warn:#e0a84a; --warn-soft:rgba(224,168,74,.15);
+  --bad:#ef7b68; --bad-soft:rgba(239,123,104,.13); --shade:rgba(0,0,0,.7); color-scheme:dark}}
+:root[data-theme="dark"]{
+  --paper:#0f151c; --card:#16202a; --ink:#e2e8ef; --muted:#93a1b2; --line:#283545;
+  --grid:rgba(120,160,255,.07); --accent:#7ea3ff; --accent-soft:rgba(126,163,255,.14);
+  --ok:#5fc48a; --ok-soft:rgba(95,196,138,.14); --warn:#e0a84a; --warn-soft:rgba(224,168,74,.15);
+  --bad:#ef7b68; --bad-soft:rgba(239,123,104,.13); --shade:rgba(0,0,0,.7); color-scheme:dark}
+
+*{box-sizing:border-box}
+body{background:var(--paper);color:var(--ink);font:15px/1.5 var(--f-body);margin:0}
+button,input,textarea,select{font:inherit;color:inherit}
+a{color:var(--accent)}
+:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.wrap{max-width:980px;margin:0 auto;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+
+/* title block */
+.top{border-bottom:1px solid var(--line);
+  background-image:linear-gradient(var(--grid) 1px,transparent 1px),linear-gradient(90deg,var(--grid) 1px,transparent 1px);
+  background-size:12px 12px}
+.top .wrap{padding-block:28px 18px;display:flex;flex-wrap:wrap;align-items:flex-end;justify-content:space-between;gap:16px}
+.eyebrow{font:12px var(--f-mono);letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
+h1{font:700 clamp(28px,6vw,40px)/1 var(--f-display);margin:0;letter-spacing:.01em;text-wrap:balance}
+.stamp{font:12px/1.4 var(--f-mono);color:var(--muted);display:grid;grid-template-columns:auto auto;gap:2px 14px;
+  border:1px solid var(--line);background:var(--card);padding:8px 12px;font-variant-numeric:tabular-nums}
+.stamp b{color:var(--ink);font-weight:500}
+.stamp b.bad{color:var(--bad)}
+
+main.wrap{padding-block:20px 60px;display:flex;flex-direction:column;gap:18px}
+
+/* composer */
+.composer{background:var(--card);border:1px solid var(--line);border-radius:6px;padding:14px;display:flex;flex-direction:column;gap:12px}
+.seg{display:flex;gap:4px;flex-wrap:wrap}
+.seg button{border:1px solid var(--line);background:transparent;border-radius:4px;padding:6px 14px;cursor:pointer;font-weight:500}
+.seg button[aria-pressed="true"]{background:var(--ink);color:var(--paper);border-color:var(--ink)}
+.row{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+.row > *{min-width:0}
+input[type=text],input[type=date],input[type=search],textarea,select{background:var(--paper);border:1px solid var(--line);border-radius:4px;padding:8px 10px;width:100%}
+select{width:auto;max-width:100%}
+textarea{min-height:110px;resize:vertical;line-height:1.5}
+textarea.short{min-height:60px}
+.grow{flex:1 1 220px}
+.narrow{flex:0 1 170px}
+.check{display:inline-flex;gap:6px;align-items:center;cursor:pointer;font-size:14px;white-space:nowrap}
+.btn{border:1px solid var(--accent);background:var(--accent);color:var(--paper);border-radius:4px;padding:8px 16px;font-weight:600;cursor:pointer;white-space:nowrap}
+.btn:disabled{opacity:.5;cursor:default}
+.ghost{border:1px solid var(--line);background:transparent;color:var(--ink);border-radius:4px;padding:5px 10px;cursor:pointer;font-size:13px;white-space:nowrap;display:inline-flex;align-items:center;gap:4px}
+.ghost:hover{border-color:var(--accent);color:var(--accent)}
+.ghost.danger{color:var(--bad)} .ghost.danger:hover{border-color:var(--bad)}
+.ghost.armed{background:var(--bad);color:var(--paper);border-color:var(--bad)}
+.ghost.on{color:var(--warn);border-color:var(--warn)}
+.ghost input[type=file]{position:absolute;width:1px;height:1px;opacity:0;pointer-events:none}
+.lbl{font:11px var(--f-mono);text-transform:uppercase;letter-spacing:.08em;color:var(--muted);display:block}
+.drop{border:1.5px dashed var(--line);border-radius:6px;padding:18px;text-align:center;cursor:pointer;color:var(--muted);display:block;position:relative}
+.drop:hover,.drop.over{border-color:var(--accent);color:var(--accent);background:var(--accent-soft)}
+.drop input{position:absolute;width:1px;height:1px;opacity:0}
+.drop strong{color:var(--ink)}
+.pending{font:13px var(--f-mono);color:var(--muted);display:flex;flex-direction:column;gap:2px;overflow-wrap:anywhere}
+.hint{font-size:13px;color:var(--muted)}
+
+/* toolbar */
+.tabs{display:flex;border-bottom:1px solid var(--line);overflow-x:auto}
+.tabs button{background:none;border:0;border-bottom:2px solid transparent;padding:10px 14px;cursor:pointer;font-weight:500;color:var(--muted);white-space:nowrap}
+.tabs button[aria-selected="true"]{color:var(--ink);border-bottom-color:var(--accent)}
+.tabs .n{font:12px var(--f-mono);margin-left:6px;color:var(--muted)}
+.filters{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+.filters input{flex:1 1 200px;max-width:320px}
+.chips{display:flex;flex-wrap:wrap;gap:6px}
+.chip{border:1px solid var(--line);background:var(--card);border-radius:999px;padding:3px 10px;font-size:13px;cursor:pointer}
+.chip[aria-pressed="true"]{background:var(--accent-soft);border-color:var(--accent);color:var(--accent)}
+.spacer{flex:1}
+
+/* activity */
+.activity{background:var(--card);border:1px solid var(--line);border-radius:6px;padding:12px 14px;display:flex;flex-direction:column;gap:8px}
+.activity .head{display:flex;justify-content:space-between;flex-wrap:wrap;gap:6px;align-items:baseline}
+.activity .head b{font:700 15px var(--f-display)}
+.bars{display:grid;grid-template-columns:repeat(14,minmax(0,1fr));gap:4px;align-items:end;height:70px;border-bottom:1px solid var(--line);
+  background-image:linear-gradient(var(--line) 1px,transparent 1px);background-size:100% 35px;background-position:0 -1px}
+.bars span{background:var(--accent);border-radius:2px 2px 0 0;min-height:0;opacity:.85}
+.bars span.today{opacity:1;background:var(--ink)}
+.bars span.zero{background:transparent}
+.blabels{display:grid;grid-template-columns:repeat(14,minmax(0,1fr));gap:4px;font:10px var(--f-mono);color:var(--muted);text-align:center;font-variant-numeric:tabular-nums}
+.blabels .today{color:var(--ink);font-weight:500}
+
+/* items */
+.day{display:flex;flex-direction:column;gap:8px}
+.day h3{font:500 12px var(--f-mono);text-transform:uppercase;letter-spacing:.08em;color:var(--muted);margin:10px 0 0;display:flex;gap:8px}
+.day h3.bad{color:var(--bad)}
+.item{background:var(--card);border:1px solid var(--line);border-radius:6px;padding:12px 14px;display:flex;gap:12px;align-items:flex-start}
+.item.pinned{border-color:var(--warn)}
+.item.open{border-color:var(--accent);box-shadow:0 0 0 1px var(--accent)}
+.item .body{flex:1;min-width:0;display:flex;flex-direction:column;gap:6px}
+.item .title{font-weight:600;overflow-wrap:anywhere}
+button.title{background:none;border:0;padding:0;text-align:left;cursor:pointer}
+button.title:hover{color:var(--accent)}
+.item .text{white-space:pre-wrap;overflow-wrap:anywhere;color:var(--ink)}
+.item .text.clamp{display:-webkit-box;-webkit-line-clamp:4;-webkit-box-orient:vertical;overflow:hidden}
+.meta{display:flex;flex-wrap:wrap;gap:6px 10px;align-items:center;font:12px var(--f-mono);color:var(--muted);font-variant-numeric:tabular-nums}
+.tag{color:var(--accent);background:var(--accent-soft);padding:1px 7px;border-radius:3px}
+.kind{font:500 10px var(--f-mono);text-transform:uppercase;letter-spacing:.1em;color:var(--muted);border:1px solid var(--line);padding:1px 6px;border-radius:3px}
+.actions{display:flex;gap:6px;flex-wrap:wrap;justify-content:flex-end}
+.status{flex:none;width:30px;height:30px;border-radius:50%;border:2px solid var(--line);background:transparent;cursor:pointer;display:grid;place-items:center;font:700 13px var(--f-mono)}
+.status.todo{border-color:var(--muted)}
+.status.doing{border-color:var(--warn);background:var(--warn-soft);color:var(--warn)}
+.status.done{border-color:var(--ok);background:var(--ok);color:var(--card)}
+.item.is-done .title{text-decoration:line-through;color:var(--muted)}
+.pill{font:500 11px var(--f-mono);padding:1px 7px;border-radius:3px;background:var(--paper)}
+.pill.doing{background:var(--warn-soft);color:var(--warn)}
+.pill.done{background:var(--ok-soft);color:var(--ok)}
+.pill.todo{background:var(--accent-soft);color:var(--accent)}
+.pill.late,.pill.imp{background:var(--bad-soft);color:var(--bad)}
+.progress{display:inline-flex;align-items:center;gap:6px}
+.progress i{display:inline-block;width:46px;height:5px;border-radius:3px;background:var(--line);overflow:hidden;position:relative}
+.progress i b{position:absolute;inset:0 auto 0 0;background:var(--ok)}
+
+/* task detail */
+.detail{display:flex;flex-direction:column;gap:14px;border-top:1px dashed var(--line);padding-top:12px;margin-top:4px}
+.detail form{display:flex;flex-direction:column;gap:8px}
+.subs{display:flex;flex-direction:column;gap:2px}
+.subrow{display:flex;align-items:center;gap:8px;padding:4px 0}
+.subrow input{width:17px;height:17px;flex:none;accent-color:var(--ok)}
+.subrow label{flex:1;min-width:0;overflow-wrap:anywhere;cursor:pointer}
+.subrow.done label{text-decoration:line-through;color:var(--muted)}
+.x{border:0;background:none;color:var(--muted);cursor:pointer;font-size:16px;line-height:1;padding:2px 6px;border-radius:3px}
+.x:hover{color:var(--bad);background:var(--bad-soft)}
+.att{display:flex;flex-direction:column;gap:6px}
+.fchip{display:inline-flex;align-items:center;gap:2px;border:1px solid var(--line);border-radius:4px;background:var(--paper);font-size:13px;max-width:100%}
+.fchip button.o{border:0;background:none;cursor:pointer;padding:3px 4px 3px 8px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:240px}
+.fchip button.o:hover{color:var(--accent)}
+
+.board{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px;align-items:start}
+.board.single{grid-template-columns:1fr}
+.col{display:flex;flex-direction:column;gap:8px;min-width:0}
+.col h3{font:700 15px var(--f-display);margin:0;display:flex;justify-content:space-between;padding-bottom:6px;border-bottom:2px solid var(--line)}
+.col.doing h3{border-color:var(--warn)} .col.done h3{border-color:var(--ok)}
+.col h3 span{font:12px var(--f-mono);color:var(--muted)}
+
+.files{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:12px}
+.file{background:var(--card);border:1px solid var(--line);border-radius:6px;overflow:hidden;display:flex;flex-direction:column}
+.thumb{aspect-ratio:16/10;max-width:100%;background:var(--paper);display:grid;place-items:center;border:0;border-bottom:1px solid var(--line);overflow:hidden;cursor:pointer;width:100%;padding:0;
+  background-image:linear-gradient(var(--grid) 1px,transparent 1px),linear-gradient(90deg,var(--grid) 1px,transparent 1px);background-size:10px 10px}
+.thumb img{width:100%;height:100%;object-fit:cover}
+.thumb .ext{font:700 22px var(--f-display);color:var(--accent);letter-spacing:.04em}
+.file .body{padding:10px 12px;display:flex;flex-direction:column;gap:6px;flex:1}
+.file .name{font-weight:600;overflow-wrap:anywhere}
+.file form{display:flex;flex-direction:column;gap:6px}
+
+.empty{border:1.5px dashed var(--line);border-radius:6px;padding:28px 18px;text-align:center;color:var(--muted)}
+.empty b{display:block;color:var(--ink);font:700 17px var(--f-display);margin-bottom:4px}
+.banner{border:1px solid var(--warn);background:var(--warn-soft);border-radius:6px;padding:12px 14px}
+
+/* viewer */
+.viewer{position:fixed;inset:0;z-index:50;background:var(--shade);display:flex;padding:max(12px,env(safe-area-inset-top,0px)) max(12px,env(safe-area-inset-right,0px)) max(12px,env(safe-area-inset-bottom,0px)) max(12px,env(safe-area-inset-left,0px))}
+.vbox{background:var(--card);border-radius:8px;flex:1;display:flex;flex-direction:column;overflow:hidden;min-width:0}
+.vhead{display:flex;gap:8px;align-items:center;padding:10px 12px;border-bottom:1px solid var(--line);flex-wrap:wrap}
+.vhead .name{flex:1 1 160px;font-weight:600;overflow-wrap:anywhere;min-width:0}
+.vbody{flex:1;min-height:0;overflow:auto;display:flex;background:var(--paper)}
+.vbody iframe{flex:1;border:0;width:100%;height:100%;background:#fff}
+.vbody img,.vbody video{max-width:100%;max-height:100%;margin:auto;display:block}
+.vbody pre{margin:0;padding:16px;font:13px/1.5 var(--f-mono);white-space:pre-wrap;overflow-wrap:anywhere;flex:1}
+
+.toast{position:fixed;left:50%;transform:translateX(-50%);bottom:calc(16px + env(safe-area-inset-bottom,0px));background:var(--ink);color:var(--paper);padding:10px 16px;border-radius:6px;z-index:60;max-width:calc(100% - 32px);font-size:14px}
+.dropall{position:fixed;inset:0;z-index:40;background:var(--accent-soft);border:3px dashed var(--accent);display:grid;place-items:center;font:700 24px var(--f-display);color:var(--accent);pointer-events:none}
+kbd{font:11px var(--f-mono);border:1px solid var(--line);border-bottom-width:2px;border-radius:3px;padding:0 4px;color:var(--muted)}
+
+@media (max-width:700px){.board{grid-template-columns:1fr}.stamp{width:100%}.item{flex-wrap:wrap}.item .actions{width:100%;justify-content:flex-start;padding-left:42px}}
+@media (prefers-reduced-motion:no-preference){.item,.file{transition:border-color .15s}.item:not(.open):hover,.file:hover{border-color:var(--muted)}}
+</style>
+</head>
+<body>
+
+<header class="top">
+  <div class="wrap">
+    <div>
+      <div class="eyebrow">задания · заметки · файлы</div>
+      <h1>Рабочая тетрадь</h1>
+    </div>
+    <div class="stamp">
+      <span>Сегодня</span><b id="st-date">—</b>
+      <span>В работе</span><b id="st-doing">0</b>
+      <span>Просрочено</span><b id="st-late">0</b>
+      <span>Сделано за 7 дней</span><b id="st-week">0</b>
+    </div>
+  </div>
+</header>
+
+<main class="wrap">
+  <div id="banner" class="banner" hidden></div>
+
+  <section class="composer" id="composer" aria-label="Добавить">
+    <div class="seg" id="kind">
+      <button type="button" data-kind="task" aria-pressed="true">Задание</button>
+      <button type="button" data-kind="note" aria-pressed="false">Заметка</button>
+      <button type="button" data-kind="file" aria-pressed="false">Файл</button>
+    </div>
+
+    <form id="f-task" class="row">
+      <input type="text" id="task-title" class="grow" placeholder="Что нужно сделать? Например: чертёж детали, лист А3" required>
+      <input type="date" id="task-due" class="narrow" title="Срок">
+      <input type="text" id="task-tag" class="narrow" list="tags" placeholder="Предмет">
+      <label class="check"><input type="checkbox" id="task-imp"> Важно</label>
+      <button class="btn" type="submit">Добавить</button>
+    </form>
+
+    <form id="f-note" hidden style="display:flex;flex-direction:column;gap:8px">
+      <input type="text" id="note-title" placeholder="Заголовок (можно пустой)">
+      <textarea id="note-body" placeholder="Что сделал, что узнал, что не забыть… Ссылки станут кликабельными." required></textarea>
+      <div class="row">
+        <input type="text" id="note-tag" class="narrow" list="tags" placeholder="Предмет">
+        <label class="check"><input type="checkbox" id="note-pin"> Закрепить</label>
+        <span class="grow"></span>
+        <button class="btn" type="submit">Сохранить заметку</button>
+      </div>
+    </form>
+
+    <form id="f-file" hidden style="display:flex;flex-direction:column;gap:8px">
+      <label class="drop" id="drop" for="file-input">
+        <input type="file" id="file-input" multiple>
+        <strong>Выбери файлы</strong>, перетащи их сюда или вставь скриншот <kbd>Ctrl</kbd>+<kbd>V</kbd><br>
+        <span class="hint" id="drop-hint">HTML (например 3D-модель), картинки, PDF, видео, текст · до 20 МБ</span>
+      </label>
+      <div class="pending" id="pending"></div>
+      <div class="row">
+        <input type="text" id="file-desc" class="grow" placeholder="Описание (необязательно)">
+        <input type="text" id="file-tag" class="narrow" list="tags" placeholder="Предмет">
+        <button class="btn" type="submit" id="file-btn" disabled>Загрузить</button>
+      </div>
+    </form>
+    <datalist id="tags"></datalist>
+  </section>
+
+  <nav class="tabs" role="tablist" id="tabs">
+    <button role="tab" data-view="feed" aria-selected="true">Лента<span class="n" id="n-feed"></span></button>
+    <button role="tab" data-view="plan" aria-selected="false">План<span class="n" id="n-plan"></span></button>
+    <button role="tab" data-view="tasks" aria-selected="false">Задания<span class="n" id="n-tasks"></span></button>
+    <button role="tab" data-view="notes" aria-selected="false">Заметки<span class="n" id="n-notes"></span></button>
+    <button role="tab" data-view="files" aria-selected="false">Файлы<span class="n" id="n-files"></span></button>
+  </nav>
+
+  <div class="filters">
+    <input type="search" id="search" placeholder="Поиск  ( / )">
+    <div class="chips" id="chips"></div>
+    <span class="spacer"></span>
+    <button class="ghost" type="button" id="export" hidden>Скачать копию</button>
+    <label class="ghost" id="import-btn" style="cursor:pointer">Импорт<input type="file" id="import-file" accept=".json,application/json"></label>
+  </div>
+
+  <section id="out" aria-live="polite">
+    <div class="empty"><b>Открываю тетрадь…</b>Загружаю задания, заметки и файлы.</div>
+  </section>
+</main>
+
+<div class="viewer" id="viewer" hidden>
+  <div class="vbox" id="vbox">
+    <div class="vhead">
+      <div class="name" id="v-name"></div>
+      <button class="ghost" type="button" id="v-full">Во весь экран</button>
+      <button class="ghost" type="button" id="v-dl">Скачать</button>
+      <button class="ghost" type="button" id="v-close">Закрыть</button>
+    </div>
+    <div class="vbody" id="v-body"></div>
+  </div>
+</div>
+<div class="dropall" id="dropall" hidden>Отпусти, чтобы добавить файлы</div>
+<div class="toast" id="toast" hidden></div>
+
+<script>
+/* ============================================================
+   Standalone Offline / IndexedDB Polyfill for Claude Storage API
+   ============================================================ */
+window.__assetUrls = new Map();
+
+(function initPolyfill() {
+  if (window.claude && window.claude.use) return;
+
+  const DB_NAME = 'RabochayaTetradDB';
+  const DB_VERSION = 1;
+  let dbPromise = null;
+
+  function openDB() {
+    if (dbPromise) return dbPromise;
+    dbPromise = new Promise((resolve, reject) => {
+      const req = indexedDB.open(DB_NAME, DB_VERSION);
+      req.onupgradeneeded = e => {
+        const d = e.target.result;
+        if (!d.objectStoreNames.contains('tasks')) d.createObjectStore('tasks', { keyPath: 'id' });
+        if (!d.objectStoreNames.contains('notes')) d.createObjectStore('notes', { keyPath: 'id' });
+        if (!d.objectStoreNames.contains('files')) d.createObjectStore('files', { keyPath: 'id' });
+        if (!d.objectStoreNames.contains('assets')) d.createObjectStore('assets', { keyPath: 'id' });
+      };
+      req.onsuccess = () => resolve(req.result);
+      req.onerror = () => reject(req.error);
+    });
+    return dbPromise;
+  }
+
+  async function tx(storeName, mode, fn) {
+    const d = await openDB();
+    return new Promise((resolve, reject) => {
+      const transaction = d.transaction(storeName, mode);
+      const store = transaction.objectStore(storeName);
+      const req = fn(store);
+      transaction.oncomplete = () => resolve(req ? req.result : undefined);
+      transaction.onerror = () => reject(transaction.error);
+    });
+  }
+
+  const listeners = { tasks: new Set(), notes: new Set(), files: new Set() };
+  async function notify(col) {
+    if (!listeners[col]) return;
+    const docs = await tx(col, 'readonly', store => store.getAll());
+    const snapshot = {
+      docs: docs.map(doc => ({
+        id: doc.id,
+        data: () => {
+          const copy = Object.assign({}, doc);
+          delete copy.id;
+          return copy;
+        }
+      }))
+    };
+    listeners[col].forEach(cb => {
+      try { cb(snapshot); } catch (e) { console.error(e); }
+    });
+  }
+
+  const db = {
+    collection(col) {
+      return {
+        onSnapshot(onNext, onError) {
+          listeners[col].add(onNext);
+          setTimeout(() => notify(col), 0);
+          return () => listeners[col].delete(onNext);
+        },
+        async add(data) {
+          const id = 'id_' + Date.now().toString(36) + '_' + Math.random().toString(36).slice(2, 8);
+          const doc = Object.assign({ id }, data);
+          await tx(col, 'readwrite', store => store.put(doc));
+          await notify(col);
+          return { id };
+        }
+      };
+    },
+    doc(path) {
+      const [col, id] = path.split('/');
+      return {
+        async update(patch) {
+          const existing = await tx(col, 'readonly', store => store.get(id));
+          if (!existing) return;
+          const updated = Object.assign(existing, patch);
+          await tx(col, 'readwrite', store => store.put(updated));
+          await notify(col);
+        },
+        async delete() {
+          await tx(col, 'readwrite', store => store.delete(id));
+          await notify(col);
+        }
+      };
+    }
+  };
+
+  const assets = {
+    async upload(file, meta) {
+      const id = 'asset_' + Date.now().toString(36) + '_' + Math.random().toString(36).slice(2, 8);
+      await tx('assets', 'readwrite', store => store.put({ id, blob: file, name: file.name, type: file.type || meta.type }));
+      const url = URL.createObjectURL(file);
+      window.__assetUrls.set(id, url);
+      return { id, sizeBytes: file.size };
+    },
+    async delete(assetId) {
+      await tx('assets', 'readwrite', store => store.delete(assetId));
+      if (window.__assetUrls.has(assetId)) {
+        URL.revokeObjectURL(window.__assetUrls.get(assetId));
+        window.__assetUrls.delete(assetId);
+      }
+    },
+    async getBlob(assetId) {
+      const record = await tx('assets', 'readonly', store => store.get(assetId));
+      return record ? record.blob : null;
+    },
+    async getUrl(assetId) {
+      if (window.__assetUrls.has(assetId)) return window.__assetUrls.get(assetId);
+      const blob = await assets.getBlob(assetId);
+      if (blob) {
+        const url = URL.createObjectURL(blob);
+        window.__assetUrls.set(assetId, url);
+        return url;
+      }
+      return '/_blob/' + assetId;
+    }
+  };
+
+  const downloads = {
+    async save({ filename, data }) {
+      const url = URL.createObjectURL(data);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = filename;
+      document.body.appendChild(a);
+      a.click();
+      a.remove();
+      setTimeout(() => URL.revokeObjectURL(url), 2000);
+    }
+  };
+
+  // Intercept fetch for /_blob/ requests
+  const origFetch = window.fetch;
+  window.fetch = async function(resource, init) {
+    if (typeof resource === 'string' && resource.startsWith('/_blob/')) {
+      const assetId = resource.replace('/_blob/', '');
+      const blob = await assets.getBlob(assetId);
+      if (blob) {
+        return new Response(blob, {
+          status: 200,
+          headers: { 'Content-Type': blob.type || 'application/octet-stream' }
+        });
+      }
+    }
+    return origFetch.apply(this, arguments);
+  };
+
+  window.__tetradAssets = assets;
+  window.__tetradDb = db;
+  window.__standalone = true;
+
+  window.claude = {
+    async use(service) {
+      if (service === 'db') return db;
+      if (service === 'assets') return assets;
+      if (service === 'downloads') return downloads;
+      return null;
+    }
+  };
+
+  if ('serviceWorker' in navigator && location.protocol.startsWith('http')) {
+    navigator.serviceWorker.register('./sw.js').catch(() => {});
+  }
+})();
+
+function getBlobSrc(assetId) {
+  if (window.claude && !window.__standalone) return '/_blob/' + assetId;
+  return (window.__assetUrls && window.__assetUrls.get(assetId)) || ('/_blob/' + assetId);
+}
+
+/* ============================================================
+   Application Core
+   ============================================================ */
+(function(){
+const $=s=>document.querySelector(s);
+const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const linkify=s=>esc(s).replace(/https?:\/\/[^\s<]+[^\s<.,;:!?)\]'"]/g,u=>`<a href="${u}" target="_blank" rel="noopener">${u}</a>`);
+const VIEWS=['feed','plan','tasks','notes','files'];
+const S={tasks:[],notes:[],files:[],view:'feed',tag:null,q:'',kind:'task',editing:null,open:null,armed:null,pending:[],loaded:0,busy:false};
+let db=null,assets=null,downloads=null,armTimer=null,toastTimer=null,viewing=null;
+
+try{const v=localStorage.getItem('tetrad.view');if(VIEWS.includes(v))S.view=v}catch(e){}
+
+/* ---------- dates ---------- */
+const MONTHS=['января','февраля','марта','апреля','мая','июня','июля','августа','сентября','октября','ноября','декабря'];
+const DOW=['вс','пн','вт','ср','чт','пт','сб'];
+const dayKey=t=>{const d=new Date(t);return d.getFullYear()+'-'+(d.getMonth()+1)+'-'+d.getDate()};
+function dayLabel(t){
+  const d=new Date(t),now=new Date();
+  if(dayKey(t)===dayKey(now))return 'Сегодня';
+  if(dayKey(t)===dayKey(now.getTime()-864e5))return 'Вчера';
+  return d.getDate()+' '+MONTHS[d.getMonth()]+(d.getFullYear()!==now.getFullYear()?' '+d.getFullYear():'');
+}
+const hm=t=>{const d=new Date(t);return String(d.getHours()).padStart(2,'0')+':'+String(d.getMinutes()).padStart(2,'0')};
+const iso=d=>d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');
+const isoPlus=n=>{const d=new Date();d.setDate(d.getDate()+n);return iso(d)};
+const todayISO=()=>iso(new Date());
+const dueLabel=s=>{const [y,m,d]=s.split('-').map(Number);if(s===todayISO())return 'сегодня';if(s===isoPlus(1))return 'завтра';return d+' '+MONTHS[m-1]+' ('+DOW[new Date(y,m-1,d).getDay()]+')'};
+const size=b=>b<1024?b+' Б':b<1048576?(b/1024).toFixed(0)+' КБ':(b/1048576).toFixed(1)+' МБ';
+$('#st-date').textContent=new Date().getDate()+' '+MONTHS[new Date().getMonth()];
+
+function toast(msg){const t=$('#toast');t.textContent=msg;t.hidden=false;clearTimeout(toastTimer);toastTimer=setTimeout(()=>t.hidden=true,3500)}
+
+/* ---------- file types ---------- */
+const TYPES={png:['image/png','image'],jpg:['image/jpeg','image'],jpeg:['image/jpeg','image'],gif:['image/gif','image'],webp:['image/webp','image'],
+  svg:['image/svg+xml','image'],mp4:['video/mp4','video'],webm:['video/webm','video'],pdf:['application/pdf','pdf'],
+  html:['text/plain','html'],htm:['text/plain','html'],txt:['text/plain','text'],md:['text/markdown','text'],csv:['text/csv','text'],
+  json:['application/json','text'],css:['text/plain','text'],js:['text/plain','text'],py:['text/plain','text'],cpp:['text/plain','text'],c:['text/plain','text']};
+const extOf=n=>(n.match(/\.([^.]+)$/)||[,''])[1].toLowerCase();
+
+/* ---------- helpers ---------- */
+const find=(col,id)=>S[col].find(x=>x.id===id);
+const isLate=t=>t.due&&t.status!=='done'&&t.due<todayISO();
+function matches(o){
+  if(S.tag&&o.tag!==S.tag)return false;
+  if(!S.q)return true;
+  const subs=(o.subtasks||[]).map(s=>s.t).join(' ');
+  return [o.title,o.body,o.name,o.desc,o.tag,subs].join(' ').toLowerCase().includes(S.q.toLowerCase());
+}
+const allTags=()=>[...new Set([...S.tasks,...S.notes,...S.files].map(o=>o.tag).filter(Boolean))].sort((a,b)=>a.localeCompare(b,'ru'));
+const taskOrder=(a,b)=>(b.important?1:0)-(a.important?1:0)||((a.due||'9')<(b.due||'9')?-1:(a.due||'9')>(b.due||'9')?1:b.created-a.created);
+
+async function write(fn,okMsg){
+  if(!db){toast('Хранилище недоступно.');return false}
+  try{await fn();if(okMsg)toast(okMsg);return true}
+  catch(err){console.error(err);toast(err&&err.code==='quota_exceeded'?'Место в тетради закончилось — удали что-нибудь старое.':'Не получилось сохранить. Попробуй ещё раз.');return false}
+}
+
+/* ---------- rendering pieces ---------- */
+const STATUS={todo:['Надо','todo','○'],doing:['Делаю','doing','◐'],done:['Готово','done','✓']};
+function delBtn(key){
+  return S.armed===key
+    ?`<button type="button" class="ghost armed" data-act="del" data-key="${key}">Точно удалить?</button>`
+    :`<button type="button" class="ghost danger" data-act="arm" data-key="${key}">Удалить</button>`;
+}
+function fileChips(ids,col,id,removable){
+  const fs=(ids||[]).map(fid=>find('files',fid)).filter(Boolean);
+  if(!fs.length)return '';
+  return `<div class="chips">${fs.map(f=>`<span class="fchip"><button type="button" class="o" data-act="open" data-id="${f.id}" title="Открыть">📎 ${esc(f.name)}</button>${removable?`<button type="button" class="x" data-act="detach" data-col="${col}" data-id="${id}" data-fid="${f.id}" title="Открепить" aria-label="Открепить ${esc(f.name)}">×</button>`:''}</span>`).join('')}</div>`;
+}
+function attachBlock(col,id,ids){
+  const free=S.files.filter(f=>!(ids||[]).includes(f.id)).sort((a,b)=>b.created-a.created);
+  return `<div class="att"><span class="lbl">Файлы</span>
+    ${fileChips(ids,col,id,true)||'<span class="hint">Пока ничего не прикреплено.</span>'}
+    <div class="row">
+      ${free.length?`<select id="att-${col}-${id}" aria-label="Выбрать файл">${free.map(f=>`<option value="${f.id}">${esc(f.name)}</option>`).join('')}</select>
+      <button type="button" class="ghost" data-act="attach" data-col="${col}" data-id="${id}">Прикрепить</button>`:''}
+      ${assets?`<label class="ghost">Загрузить новый<input type="file" multiple data-role="att-up" data-col="${col}" data-id="${id}"></label>`:''}
+    </div></div>`;
+}
+function progress(t){
+  const s=t.subtasks||[];if(!s.length)return '';
+  const d=s.filter(x=>x.done).length;
+  return `<span class="progress" title="Подзадачи"><i><b style="width:${Math.round(d/s.length*100)}%"></b></i>${d}/${s.length}</span>`;
+}
+function taskHTML(t,showKind){
+  const st=STATUS[t.status]||STATUS.todo,late=isLate(t),open=S.open===t.id;
+  const nFiles=(t.files||[]).filter(fid=>find('files',fid)).length;
+  return `<article class="item ${t.status==='done'?'is-done':''} ${open?'open':''}">
+    <button type="button" class="status ${st[1]}" data-act="cycle" data-id="${t.id}" title="Статус: ${st[0]} — нажми, чтобы сменить" aria-label="Статус: ${st[0]}">${st[2]}</button>
+    <div class="body">
+      <button type="button" class="title" data-act="toggle" data-id="${t.id}" aria-expanded="${open}">${esc(t.title)}</button>
+      ${t.desc&&!open?`<div class="text clamp hint">${linkify(t.desc)}</div>`:''}
+      <div class="meta">
+        ${showKind?'<span class="kind">задание</span>':''}
+        <span class="pill ${st[1]}">${st[0]}</span>
+        ${t.important?'<span class="pill imp">важно</span>':''}
+        ${t.due?`<span class="pill ${late?'late':''}">${late?'просрочено · ':'до '}${dueLabel(t.due)}</span>`:''}
+        ${t.tag?`<span class="tag">${esc(t.tag)}</span>`:''}
+        ${progress(t)}
+        ${nFiles?`<span>📎 ${nFiles}</span>`:''}
+        ${t.status==='done'&&t.doneAt?`<span>сделано ${dayLabel(t.doneAt).toLowerCase()}</span>`:''}
+      </div>
+      ${open?taskDetail(t):''}
+    </div>
+    <div class="actions">${open?'':`<button type="button" class="ghost" data-act="toggle" data-id="${t.id}">Открыть</button>`}${delBtn('task:'+t.id)}</div>
+  </article>`;
+}
+function taskDetail(t){
+  const subs=t.subtasks||[];
+  return `<div class="detail">
+    <form data-form="edit-task" data-id="${t.id}">
+      <span class="lbl">Задание</span>
+      <input type="text" id="et-title-${t.id}" name="title" value="${esc(t.title)}" required>
+      <textarea class="short" id="et-desc-${t.id}" name="desc" placeholder="Описание: что именно нужно, требования, ссылки">${esc(t.desc)}</textarea>
+      <div class="row">
+        <input type="date" id="et-due-${t.id}" name="due" class="narrow" value="${esc(t.due)}" title="Срок">
+        <input type="text" id="et-tag-${t.id}" name="tag" class="narrow" list="tags" value="${esc(t.tag)}" placeholder="Предмет">
+        <label class="check"><input type="checkbox" id="et-imp-${t.id}" name="important" ${t.important?'checked':''}> Важно</label>
+        <span class="grow"></span>
+        <button class="btn" type="submit">Сохранить</button>
+      </div>
+    </form>
+    <div class="subs"><span class="lbl">Подзадачи ${subs.length?`· ${subs.filter(s=>s.done).length} из ${subs.length}`:''}</span>
+      ${subs.map((s,i)=>`<div class="subrow ${s.done?'done':''}"><input type="checkbox" id="sub-${t.id}-${i}" data-act="sub-toggle" data-id="${t.id}" data-i="${i}" ${s.done?'checked':''}><label for="sub-${t.id}-${i}">${esc(s.t)}</label><button type="button" class="x" data-act="sub-del" data-id="${t.id}" data-i="${i}" aria-label="Удалить шаг">×</button></div>`).join('')}
+      <form data-form="sub-add" data-id="${t.id}" class="row" style="flex-direction:row">
+        <input type="text" id="sub-new-${t.id}" name="t" class="grow" placeholder="Новый шаг, например: начертить вид сверху">
+        <button class="ghost" type="submit">+ Шаг</button>
+      </form>
+    </div>
+    ${attachBlock('tasks',t.id,t.files)}
+    <div class="row"><span class="grow"></span><button type="button" class="ghost" data-act="toggle" data-id="${t.id}">Свернуть</button></div>
+  </div>`;
+}
+function noteHTML(n,showKind){
+  if(S.editing==='note:'+n.id)return `<article class="item open"><div class="body">
+    <form data-form="edit-note" data-id="${n.id}" style="display:flex;flex-direction:column;gap:8px">
+      <input type="text" id="edit-title-${n.id}" name="title" value="${esc(n.title)}" placeholder="Заголовок">
+      <textarea id="edit-body-${n.id}" name="body" required>${esc(n.body)}</textarea>
+      <div class="row"><input type="text" id="edit-tag-${n.id}" name="tag" class="narrow" list="tags" value="${esc(n.tag)}" placeholder="Предмет">
+      <span class="grow"></span><button class="ghost" type="button" data-act="cancel-edit">Отмена</button><button class="btn" type="submit">Сохранить</button></div>
+    </form>
+    ${attachBlock('notes',n.id,n.files)}
+  </div></article>`;
+  return `<article class="item ${n.pinned?'pinned':''}">
+    <div class="body">
+      ${n.title?`<div class="title">${esc(n.title)}</div>`:''}
+      <div class="text ${S.view==='feed'?'clamp':''}">${linkify(n.body)}</div>
+      ${fileChips(n.files)}
+      <div class="meta">${showKind?'<span class="kind">заметка</span>':''}${n.pinned?'<span class="pill doing">закреплена</span>':''}${n.tag?`<span class="tag">${esc(n.tag)}</span>`:''}<span>${dayLabel(n.updated||n.created)}, ${hm(n.updated||n.created)}</span></div>
+    </div>
+    <div class="actions">
+      <button type="button" class="ghost ${n.pinned?'on':''}" data-act="pin" data-id="${n.id}">${n.pinned?'Открепить':'Закрепить'}</button>
+      <button type="button" class="ghost" data-act="edit" data-key="note:${n.id}">Изменить</button>${delBtn('note:'+n.id)}</div>
+  </article>`;
+}
+function fileRowHTML(f){
+  return `<article class="item">
+    <div class="body">
+      <div class="title">${esc(f.name)}</div>
+      ${f.desc?`<div class="text">${esc(f.desc)}</div>`:''}
+      <div class="meta"><span class="kind">файл</span><span>${extOf(f.name).toUpperCase()} · ${size(f.size||0)}</span>${f.tag?`<span class="tag">${esc(f.tag)}</span>`:''}</div>
+    </div>
+    <div class="actions"><button type="button" class="ghost" data-act="open" data-id="${f.id}">Открыть</button></div>
+  </article>`;
+}
+function usedIn(fid){
+  return [...S.tasks.filter(t=>(t.files||[]).includes(fid)).map(t=>t.title),...S.notes.filter(n=>(n.files||[]).includes(fid)).map(n=>n.title||'заметка')];
+}
+function fileCardHTML(f){
+  const thumb=f.kind==='image'?`<img src="${esc(getBlobSrc(f.asset))}" alt="" loading="lazy">`:`<span class="ext">${esc(extOf(f.name).toUpperCase()||'FILE')}</span>`;
+  const editing=S.editing==='file:'+f.id,links=usedIn(f.id);
+  return `<article class="file">
+    <button type="button" class="thumb" data-act="open" data-id="${f.id}" title="Открыть ${esc(f.name)}">${thumb}</button>
+    <div class="body">
+      ${editing?`<form data-form="edit-file" data-id="${f.id}">
+          <input type="text" id="ef-name-${f.id}" name="name" value="${esc(f.name)}" required>
+          <input type="text" id="ef-desc-${f.id}" name="desc" value="${esc(f.desc)}" placeholder="Описание">
+          <input type="text" id="ef-tag-${f.id}" name="tag" list="tags" value="${esc(f.tag)}" placeholder="Предмет">
+          <div class="row"><button class="ghost" type="button" data-act="cancel-edit">Отмена</button><button class="btn" type="submit">Сохранить</button></div>
+        </form>`:`
+      <div class="name">${esc(f.name)}</div>
+      ${f.desc?`<div class="hint">${esc(f.desc)}</div>`:''}
+      ${links.length?`<div class="hint">📎 в: ${links.map(esc).join(', ')}</div>`:''}
+      <div class="meta">${f.tag?`<span class="tag">${esc(f.tag)}</span>`:''}<span>${size(f.size||0)}</span><span>${dayLabel(f.created)}</span></div>
+      <div class="actions" style="margin-top:auto;justify-content:flex-start">
+        <button type="button" class="ghost" data-act="open" data-id="${f.id}">Открыть</button>
+        ${downloads?`<button type="button" class="ghost" data-act="dl" data-id="${f.id}">Скачать</button>`:''}
+        <button type="button" class="ghost" data-act="edit" data-key="file:${f.id}">Изменить</button>
+        ${assets?delBtn('file:'+f.id):''}
+      </div>`}
+    </div>
+  </article>`;
+}
+const empty=(t,s)=>`<div class="empty"><b>${t}</b>${s}</div>`;
+const notFound=()=>empty('Ничего не найдено','Попробуй другой поиск или предмет.');
+
+function activityHTML(){
+  const days=[];
+  for(let i=13;i>=0;i--){const d=new Date();d.setHours(0,0,0,0);d.setDate(d.getDate()-i);days.push({k:dayKey(d),d,n:0})}
+  const idx=Object.fromEntries(days.map((x,i)=>[x.k,i]));
+  const bump=t=>{if(t&&idx[dayKey(t)]!=null)days[idx[dayKey(t)]].n++};
+  S.tasks.forEach(t=>{if(t.status==='done')bump(t.doneAt)});S.notes.forEach(n=>bump(n.created));S.files.forEach(f=>bump(f.created));
+  const max=Math.max(2,...days.map(x=>x.n)),total=days.reduce((a,x)=>a+x.n,0);
+  return `<div class="activity">
+    <div class="head"><b>Активность за 2 недели</b><span class="meta">${total} · сделанные задания, заметки и файлы</span></div>
+    <div class="bars">${days.map((x,i)=>`<span class="${i===13?'today':''} ${x.n?'':'zero'}" style="height:${x.n/max*100}%" title="${x.d.getDate()} ${MONTHS[x.d.getMonth()]}: ${x.n}"></span>`).join('')}</div>
+    <div class="blabels">${days.map((x,i)=>`<span class="${i===13?'today':''}">${x.d.getDate()}</span>`).join('')}</div>
+  </div>`;
+}
+
+function render(){
+  const tasks=S.tasks.filter(matches),notes=S.notes.filter(matches),files=S.files.filter(matches);
+  const active=S.tasks.filter(t=>t.status!=='done');
+  $('#st-doing').textContent=S.tasks.filter(t=>t.status==='doing').length;
+  const late=active.filter(isLate).length;$('#st-late').textContent=late;$('#st-late').className=late?'bad':'';
+  $('#st-week').textContent=S.tasks.filter(t=>t.status==='done'&&t.doneAt>Date.now()-7*864e5).length;
+  $('#n-feed').textContent=tasks.length+notes.length+files.length||'';
+  $('#n-plan').textContent=tasks.filter(t=>t.status!=='done').length||'';
+  $('#n-tasks').textContent=tasks.length||'';
+  $('#n-notes').textContent=notes.length||'';
+  $('#n-files').textContent=files.length||'';
+  document.querySelectorAll('#tabs button').forEach(b=>b.setAttribute('aria-selected',b.dataset.view===S.view));
+
+  const tags=allTags();
+  $('#tags').innerHTML=tags.map(t=>`<option value="${esc(t)}">`).join('');
+  $('#chips').innerHTML=tags.length?[`<button type="button" class="chip" data-tag="" aria-pressed="${!S.tag}">Все</button>`,...tags.map(t=>`<button type="button" class="chip" data-tag="${esc(t)}" aria-pressed="${S.tag===t}">${esc(t)}</button>`)].join(''):'';
+
+  const out=$('#out');
+  if(S.loaded<3)return;
+  // keep focus & typed text in an open form across live re-renders
+  const ae=document.activeElement,keepId=ae&&out.contains(ae)&&ae.id,keepVal=keepId&&ae.value,keepSel=keepId&&ae.selectionStart;
+  const filtered=S.tag||S.q;
+  if(S.view==='feed'){
+    const items=[...tasks.map(t=>({k:'t',o:t,at:t.updated||t.created})),...notes.map(n=>({k:'n',o:n,at:n.updated||n.created})),...files.map(f=>({k:'f',o:f,at:f.created}))]
+      .sort((a,b)=>b.at-a.at);
+    if(!items.length)out.innerHTML=filtered?notFound():empty('Тетрадь пока пустая','Добавь первое задание, заметку или загрузи файл — например, HTML с 3D-чертежом. Всё появится здесь по дням.');
+    else{
+      const groups=[];let cur=null;
+      for(const it of items){const k=dayKey(it.at);if(!cur||cur.k!==k){cur={k,label:dayLabel(it.at),list:[]};groups.push(cur)}cur.list.push(it)}
+      out.innerHTML=`<div class="day">${filtered?'':activityHTML()}</div>`+groups.map(g=>`<div class="day"><h3>${g.label}</h3>${g.list.map(it=>it.k==='t'?taskHTML(it.o,true):it.k==='n'?noteHTML(it.o,true):fileRowHTML(it.o)).join('')}</div>`).join('');
+    }
+  }else if(S.view==='plan'){
+    const open=tasks.filter(t=>t.status!=='done'),t0=todayISO(),t1=isoPlus(1),t7=isoPlus(7);
+    const buckets=[['Просрочено',t=>t.due&&t.due<t0,'bad'],['Сегодня',t=>t.due===t0],['Завтра',t=>t.due===t1],['На этой неделе',t=>t.due>t1&&t.due<=t7],['Позже',t=>t.due>t7],['Без срока',t=>!t.due]];
+    if(!open.length)out.innerHTML=filtered?notFound():empty('Всё сделано','Нет незакрытых заданий. Добавь новое сверху и поставь срок — оно встанет в план.');
+    else out.innerHTML=buckets.map(([name,fn,cls])=>{const l=open.filter(fn).sort(taskOrder);return l.length?`<div class="day"><h3 class="${cls||''}">${name}<span>· ${l.length}</span></h3>${l.map(t=>taskHTML(t)).join('')}</div>`:''}).join('');
+  }else if(S.view==='tasks'){
+    if(!tasks.length)out.innerHTML=filtered?notFound():empty('Заданий пока нет','Напиши задание в поле сверху. Кружок слева меняет статус: надо → делаю → готово. Нажми на название, чтобы добавить шаги и файлы.');
+    else{
+      const by=s=>tasks.filter(t=>(t.status||'todo')===s).sort(s==='done'?(a,b)=>(b.doneAt||0)-(a.doneAt||0):taskOrder);
+      out.innerHTML=`<div class="board ${S.open?'single':''}">${['todo','doing','done'].map(s=>{const l=by(s);return `<div class="col ${s}"><h3>${STATUS[s][0]}<span>${l.length}</span></h3>${l.map(t=>taskHTML(t)).join('')||'<div class="hint">пусто</div>'}</div>`}).join('')}</div>`;
+    }
+  }else if(S.view==='notes'){
+    if(!notes.length)out.innerHTML=filtered?notFound():empty('Заметок пока нет','Нажми «Заметка» сверху и запиши, что сделал или что нужно запомнить.');
+    else out.innerHTML=`<div class="day">${[...notes].sort((a,b)=>(b.pinned?1:0)-(a.pinned?1:0)||(b.updated||b.created)-(a.updated||a.created)).map(n=>noteHTML(n)).join('')}</div>`;
+  }else{
+    if(!files.length)out.innerHTML=filtered?notFound():empty('Файлов пока нет','Нажми «Файл» сверху, перетащи файл на страницу или вставь скриншот через Ctrl+V. HTML-файлы (например, 3D-модель) открываются прямо здесь.');
+    else out.innerHTML=`<div class="files">${[...files].sort((a,b)=>b.created-a.created).map(fileCardHTML).join('')}</div>`;
+  }
+  if(keepId){const el=document.getElementById(keepId);if(el){if('value' in el&&el.type!=='checkbox'){el.value=keepVal;try{el.setSelectionRange(keepSel,keepSel)}catch(_){}}el.focus()}}
+}
+
+/* ---------- composer ---------- */
+function setKind(k){
+  S.kind=k;
+  document.querySelectorAll('#kind button').forEach(b=>b.setAttribute('aria-pressed',b.dataset.kind===k));
+  $('#f-task').hidden=k!=='task';$('#f-note').hidden=k!=='note';$('#f-file').hidden=k!=='file';
+}
+$('#kind').addEventListener('click',e=>{const b=e.target.closest('button');if(b)setKind(b.dataset.kind)});
+
+$('#f-task').addEventListener('submit',async e=>{
+  e.preventDefault();const title=$('#task-title').value.trim();if(!title)return;
+  const now=Date.now();
+  const ok=await write(()=>db.collection('tasks').add({title,desc:'',due:$('#task-due').value||'',tag:$('#task-tag').value.trim(),important:$('#task-imp').checked,status:'todo',subtasks:[],files:[],created:now,updated:now}));
+  if(ok){$('#task-title').value='';$('#task-due').value='';$('#task-imp').checked=false}
+});
+$('#f-note').addEventListener('submit',async e=>{
+  e.preventDefault();const body=$('#note-body').value.trim();if(!body)return;
+  const now=Date.now();
+  const ok=await write(()=>db.collection('notes').add({title:$('#note-title').value.trim(),body,tag:$('#note-tag').value.trim(),pinned:$('#note-pin').checked,files:[],created:now,updated:now}),'Заметка сохранена');
+  if(ok){$('#note-title').value='';$('#note-body').value='';$('#note-pin').checked=false}
+});
+
+/* files */
+function checkFile(f){const t=TYPES[extOf(f.name)];return !t?'такой тип не поддерживается':f.size>20*1048576?'больше 20 МБ':!f.size?'пустой файл':''}
+function setPending(list){
+  S.pending=[...list];
+  $('#pending').innerHTML=S.pending.map(f=>{const bad=checkFile(f);return `<span style="color:${bad?'var(--bad)':'inherit'}">${esc(f.name)} · ${size(f.size)}${bad?' — '+bad:''}</span>`}).join('');
+  $('#file-btn').disabled=!S.pending.length||!assets;
+}
+async function uploadMany(list,meta,onStep){
+  const ids=[],skipped=[];let i=0;
+  for(const f of list){
+    i++;const bad=checkFile(f);if(bad){skipped.push(f.name);continue}
+    onStep&&onStep(i,list.length);
+    try{
+      const t=TYPES[extOf(f.name)];
+      const r=await assets.upload(f,{type:t[0]});
+      const ref=await db.collection('files').add({name:f.name,asset:r.id,kind:t[1],size:r.sizeBytes||f.size,desc:meta.desc||'',tag:meta.tag||'',created:Date.now()});
+      ids.push(ref.id);
+    }catch(err){console.error(err);skipped.push(f.name+(err&&err.code==='quota_or_state'?' (нет места)':err&&err.code==='invalid_request'?' (кодировка не UTF-8)':''))}
+  }
+  toast(skipped.length?`Загружено: ${ids.length}. Не получилось: ${skipped.join(', ')}`:`Загружено файлов: ${ids.length}`);
+  return ids;
+}
+$('#file-input').addEventListener('change',e=>setPending(e.target.files));
+$('#f-file').addEventListener('submit',async e=>{
+  e.preventDefault();
+  if(!assets){toast('Хранилище недоступно.');return}
+  if(S.busy||!db)return;S.busy=true;const btn=$('#file-btn');btn.disabled=true;
+  await uploadMany(S.pending,{desc:$('#file-desc').value.trim(),tag:$('#file-tag').value.trim()},(i,n)=>btn.textContent=`Загружаю ${i}/${n}…`);
+  S.busy=false;btn.textContent='Загрузить';
+  $('#file-input').value='';$('#file-desc').value='';setPending([]);
+});
+/* drag & drop anywhere */
+let dragDepth=0;
+const hasFiles=e=>e.dataTransfer&&[...e.dataTransfer.types].includes('Files');
+document.addEventListener('dragenter',e=>{if(!hasFiles(e))return;dragDepth++;$('#dropall').hidden=false});
+document.addEventListener('dragleave',e=>{if(!hasFiles(e))return;if(--dragDepth<=0){dragDepth=0;$('#dropall').hidden=true}});
+document.addEventListener('dragover',e=>{if(hasFiles(e))e.preventDefault()});
+document.addEventListener('drop',e=>{if(!hasFiles(e))return;e.preventDefault();dragDepth=0;$('#dropall').hidden=true;setKind('file');setPending(e.dataTransfer.files);$('#composer').scrollIntoView({behavior:'smooth',block:'start'})});
+/* paste screenshots */
+document.addEventListener('paste',e=>{
+  const items=[...(e.clipboardData&&e.clipboardData.files||[])];if(!items.length)return;
+  e.preventDefault();
+  const stamp=new Date(),name=n=>`скриншот ${iso(stamp)} ${hm(stamp).replace(':','-')}${n>0?' ('+n+')':''}`;
+  const files=items.map((f,i)=>f.name&&f.name!=='image.png'?f:new File([f],name(i)+'.'+(f.type.split('/')[1]||'png').replace('jpeg','jpg'),{type:f.type}));
+  setKind('file');setPending(files);$('#composer').scrollIntoView({behavior:'smooth',block:'start'});
+  toast('Скриншот добавлен — нажми «Загрузить».');
+});
+
+/* ---------- toolbar ---------- */
+$('#tabs').addEventListener('click',e=>{const b=e.target.closest('button');if(!b)return;S.view=b.dataset.view;S.editing=null;try{localStorage.setItem('tetrad.view',S.view)}catch(_){}render()});
+$('#chips').addEventListener('click',e=>{const b=e.target.closest('.chip');if(!b)return;S.tag=b.dataset.tag||null;render()});
+$('#search').addEventListener('input',e=>{S.q=e.target.value.trim();render()});
+document.addEventListener('keydown',e=>{
+  if(e.key==='/'&&!/INPUT|TEXTAREA|SELECT/.test(document.activeElement.tagName)){e.preventDefault();$('#search').focus()}
+  else if(e.key==='Escape'){
+    if(!$('#viewer').hidden){if(!document.fullscreenElement)closeViewer()}
+    else if(S.open||S.editing){S.open=null;S.editing=null;render()}
+  }
+});
+$('#export').addEventListener('click',async()=>{
+  const strip=a=>a.map(o=>Object.assign({},o));
+  const data=JSON.stringify({exported:new Date().toISOString(),tasks:strip(S.tasks),notes:strip(S.notes),files:strip(S.files)},null,2);
+  try{await downloads.save({filename:`тетрадь-${todayISO()}.json`,data:new Blob([data],{type:'application/json'})})}
+  catch(err){if(err&&!['user_declined','cancelled','declined'].includes(err.code)){console.error(err);toast('Скачать не получилось.')}}
+});
+
+/* import backup */
+$('#import-file').addEventListener('change', async e => {
+  const file = e.target.files && e.target.files[0];
+  if (!file) return;
+  try {
+    const text = await file.text();
+    const data = JSON.parse(text);
+    if (!data || (!data.tasks && !data.notes && !data.files)) {
+      toast('Неверный формат файла бэкапа.');
+      return;
+    }
+    let count = 0;
+    if (Array.isArray(data.tasks)) {
+      for (const t of data.tasks) {
+        const copy = Object.assign({}, t);
+        delete copy.id;
+        await db.collection('tasks').add(copy);
+        count++;
+      }
+    }
+    if (Array.isArray(data.notes)) {
+      for (const n of data.notes) {
+        const copy = Object.assign({}, n);
+        delete copy.id;
+        await db.collection('notes').add(copy);
+        count++;
+      }
+    }
+    toast(`Импортировано записей: ${count}`);
+  } catch(err) {
+    console.error(err);
+    toast('Ошибка при импорте бэкапа.');
+  } finally {
+    e.target.value = '';
+  }
+});
+
+/* ---------- item actions ---------- */
+const disarm=()=>{S.armed=null;clearTimeout(armTimer)};
+$('#out').addEventListener('click',async e=>{
+  const b=e.target.closest('[data-act]');if(!b)return;
+  const act=b.dataset.act,id=b.dataset.id;
+  if(act==='cycle'){
+    const t=find('tasks',id);if(!t)return;
+    const next={todo:'doing',doing:'done',done:'todo'}[t.status||'todo'];
+    const patch={status:next,updated:Date.now()};if(next==='done')patch.doneAt=Date.now();
+    write(()=>db.doc('tasks/'+id).update(patch),next==='done'?'Готово ✓':'');
+  }else if(act==='toggle'){S.open=S.open===id?null:id;render()}
+  else if(act==='edit'){S.editing=b.dataset.key;render();const el=document.querySelector('#out form input, #out form textarea');el&&el.focus()}
+  else if(act==='cancel-edit'){S.editing=null;render()}
+  else if(act==='pin'){const n=find('notes',id);if(n)write(()=>db.doc('notes/'+id).update({pinned:!n.pinned}),n.pinned?'Откреплено':'Закреплено')}
+  else if(act==='arm'){S.armed=b.dataset.key;clearTimeout(armTimer);armTimer=setTimeout(()=>{S.armed=null;render()},4000);render()}
+  else if(act==='del'){
+    const [col,did]=b.dataset.key.split(':');disarm();
+    if(col==='file'){
+      const f=find('files',did);
+      const ok=await write(()=>db.doc('files/'+did).delete(),'Файл удалён');
+      if(ok&&f&&assets){try{await assets.delete(f.asset)}catch(err){console.error(err)}}
+    }else{if(S.open===did)S.open=null;write(()=>db.doc((col==='task'?'tasks/':'notes/')+did).delete(),'Удалено')}
+  }
+  else if(act==='sub-toggle'){
+    const t=find('tasks',id);if(!t)return;
+    const subs=(t.subtasks||[]).map((s,i)=>i===+b.dataset.i?{t:s.t,done:b.checked}:{t:s.t,done:!!s.done});
+    const patch={subtasks:subs,updated:Date.now()};
+    if(subs.length&&subs.every(s=>s.done)&&t.status!=='done'){toast('Все шаги готовы — отметь задание кружком слева.')}
+    else if(b.checked&&(t.status||'todo')==='todo')patch.status='doing';
+    write(()=>db.doc('tasks/'+id).update(patch));
+  }
+  else if(act==='sub-del'){
+    const t=find('tasks',id);if(!t)return;
+    write(()=>db.doc('tasks/'+id).update({subtasks:(t.subtasks||[]).filter((_,i)=>i!==+b.dataset.i)}));
+  }
+  else if(act==='attach'){
+    const sel=document.getElementById(`att-${b.dataset.col}-${id}`);if(!sel||!sel.value)return;
+    const o=find(b.dataset.col,id);if(!o)return;
+    write(()=>db.doc(b.dataset.col+'/'+id).update({files:[...(o.files||[]),sel.value]}),'Файл прикреплён');
+  }
+  else if(act==='detach'){
+    const o=find(b.dataset.col,id);if(!o)return;
+    write(()=>db.doc(b.dataset.col+'/'+id).update({files:(o.files||[]).filter(f=>f!==b.dataset.fid)}));
+  }
+  else if(act==='open')openFile(find('files',id));
+  else if(act==='dl')download(find('files',id));
+});
+$('#out').addEventListener('change',async e=>{
+  const inp=e.target;if(inp.dataset.role!=='att-up'||!inp.files.length||!assets)return;
+  const col=inp.dataset.col,id=inp.dataset.id,o=find(col,id);if(!o)return;
+  const ids=await uploadMany([...inp.files],{tag:o.tag||''});
+  const fresh=find(col,id);
+  if(ids.length&&fresh)write(()=>db.doc(col+'/'+id).update({files:[...(fresh.files||[]),...ids]}));
+});
+$('#out').addEventListener('submit',async e=>{
+  const f=e.target.closest('form[data-form]');if(!f)return;e.preventDefault();
+  const id=f.dataset.id,el=f.elements;
+  if(f.dataset.form==='edit-note'){
+    const body=el.body.value.trim();if(!body)return;
+    if(await write(()=>db.doc('notes/'+id).update({title:el.title.value.trim(),body,tag:el.tag.value.trim(),updated:Date.now()}),'Сохранено')){S.editing=null;render()}
+  }else if(f.dataset.form==='edit-task'){
+    const title=el.title.value.trim();if(!title)return;
+    write(()=>db.doc('tasks/'+id).update({title,desc:el.desc.value.trim(),due:el.due.value||'',tag:el.tag.value.trim(),important:el.important.checked,updated:Date.now()}),'Сохранено');
+  }else if(f.dataset.form==='sub-add'){
+    const t=find('tasks',id),txt=el.t.value.trim();if(!t||!txt)return;
+    if(await write(()=>db.doc('tasks/'+id).update({subtasks:[...(t.subtasks||[]),{t:txt,done:false}]}))){const i=document.getElementById('sub-new-'+id);if(i){i.value='';i.focus()}}
+  }else if(f.dataset.form==='edit-file'){
+    const name=el.name.value.trim();if(!name)return;
+    if(await write(()=>db.doc('files/'+id).update({name,desc:el.desc.value.trim(),tag:el.tag.value.trim()}),'Сохранено')){S.editing=null;render()}
+  }
+});
+
+/* ---------- viewer ---------- */
+async function openFile(f){
+  if(!f)return;viewing=f;
+  const url=getBlobSrc(f.asset),body=$('#v-body');
+  $('#v-name').textContent=f.name;$('#v-dl').hidden=!downloads;
+  body.innerHTML='<pre>Загружаю…</pre>';$('#viewer').hidden=false;document.body.style.overflow='hidden';
+  try{
+    if(f.kind==='image')body.innerHTML=`<img src="${url}" alt="${esc(f.name)}">`;
+    else if(f.kind==='video')body.innerHTML=`<video src="${url}" controls playsinline></video>`;
+    else if(f.kind==='pdf')body.innerHTML=`<iframe src="${url}" title="${esc(f.name)}"></iframe>`;
+    else{
+      const r=await fetch(url);if(!r.ok)throw new Error(r.status);
+      const text=await r.text();
+      if(viewing!==f)return;
+      if(f.kind==='html'){
+        const fr=document.createElement('iframe');
+        fr.setAttribute('sandbox','allow-scripts allow-pointer-lock allow-modals');
+        fr.title=f.name;fr.srcdoc=text;body.innerHTML='';body.appendChild(fr);
+      }else{const pre=document.createElement('pre');pre.textContent=text;body.innerHTML='';body.appendChild(pre)}
+    }
+  }catch(err){console.error(err);body.innerHTML='<pre>Не получилось открыть файл. Возможно, он был удалён.</pre>'}
+}
+function closeViewer(){$('#viewer').hidden=true;$('#v-body').innerHTML='';document.body.style.overflow='';viewing=null;if(document.fullscreenElement)document.exitFullscreen().catch(()=>{})}
+$('#v-close').addEventListener('click',closeViewer);
+$('#viewer').addEventListener('click',e=>{if(e.target.id==='viewer')closeViewer()});
+$('#v-full').addEventListener('click',()=>{const el=$('#vbox');(el.requestFullscreen?el.requestFullscreen():Promise.reject()).catch(()=>toast('Во весь экран здесь не получается.'))});
+$('#v-dl').addEventListener('click',()=>viewing&&download(viewing));
+async function download(f){
+  if(!f||!downloads)return;
+  try{
+    let blob;
+    if(window.__tetradAssets){
+      blob=await window.__tetradAssets.getBlob(f.asset);
+    }
+    if(!blob){
+      const r=await fetch(getBlobSrc(f.asset));
+      blob=await r.blob();
+    }
+    await downloads.save({filename:f.name,data:blob});
+  }
+  catch(err){if(err&&!['user_declined','cancelled','declined'].includes(err.code)){console.error(err);toast('Скачать не получилось.')}}
+}
+
+/* ---------- boot ---------- */
+function banner(html){const b=$('#banner');b.innerHTML=html;b.hidden=false}
+render();
+(async()=>{
+  if(!window.claude||!window.claude.use){S.loaded=3;banner('Эта страница сохраняет данные только когда открыта на claude.ai.');render();return}
+  [db,assets,downloads]=await Promise.all([claude.use('db'),claude.use('assets'),claude.use('downloads')]);
+  if(!db){S.loaded=3;banner('Не вижу хранилище. Войди в claude.ai под своим аккаунтом и открой страницу снова.');render();return}
+  if(!assets){$('#file-btn').disabled=true;$('#drop-hint').textContent='Загружать файлы может только владелец тетради. Открыть и скачать — можно.'}
+  if(downloads)$('#export').hidden=false;
+  for(const col of ['tasks','notes','files']){
+    let first=true;
+    db.collection(col).onSnapshot(async s=>{
+      S[col]=s.docs.map(d=>Object.assign({id:d.id},d.data()));
+      if(col==='files' && window.__tetradAssets){
+        for(const item of S.files){
+          if(item.asset && !window.__assetUrls.has(item.asset)){
+            const b=await window.__tetradAssets.getBlob(item.asset);
+            if(b) window.__assetUrls.set(item.asset, URL.createObjectURL(b));
+          }
+        }
+      }
+      if(first){first=false;S.loaded++}
+      render();
+    },err=>{console.error(err);if(first){first=false;S.loaded++}render();toast('Связь с хранилищем пропала. Обнови страницу.')});
+  }
+})();
+})();
+</script>
+</body>
+</html>
